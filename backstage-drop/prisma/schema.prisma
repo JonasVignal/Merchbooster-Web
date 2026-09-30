@@ -1,0 +1,94 @@
+// This schema mirrors the tables owned by the Merchbooster app.
+// Backstage Drop reads from the same database to list artists and drops —
+// it does not own or migrate this schema. Run `prisma generate` only, never `migrate`.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Artist {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  passwordHash      String?
+  name              String?
+  slug              String?  @unique
+  address           String?
+  phoneNumber       String?
+  bankAccountNumber String?
+  setupCompleted    Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  storefront    Storefront?
+  merchPackages MerchPackage[]
+  drops         Drop[]
+  payouts       Payout[]
+}
+
+model Storefront {
+  id               String   @id @default(uuid())
+  artistId         String   @unique
+  artist           Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  themeColorStart  String   @default("#168aad")
+  themeColorEnd    String?
+  font             String   @default("Inter")
+  customFontUrl    String?
+  logoUrl          String?
+  additionalImages String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model MerchPackage {
+  id            String   @id @default(uuid())
+  artistId      String
+  artist        Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  type          String
+  items         String
+  designConfigs String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  drops Drop[]
+}
+
+model Drop {
+  id            String         @id @default(uuid())
+  artistId      String
+  artist        Artist         @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  launchDate    DateTime
+  durationHours Int            @default(24)
+  status        String         @default("scheduled")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  orders        Order[]
+  packages      MerchPackage[]
+}
+
+model Payout {
+  id                String   @id @default(uuid())
+  artistId          String
+  artist            Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  amount            Float
+  bankAccountNumber String
+  createdAt         DateTime @default(now())
+}
+
+model Order {
+  id              String   @id @default(uuid())
+  dropId          String
+  drop            Drop     @relation(fields: [dropId], references: [id])
+  customerEmail   String
+  customerName    String
+  shippingAddress String
+  items           String
+  totalAmount     Float
+  paymentStatus   String   @default("pending")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

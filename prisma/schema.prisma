@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Artist {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  passwordHash      String?
+  name              String?
+  slug              String?  @unique
+  address           String?
+  phoneNumber       String?
+  bankAccountNumber String?
+  setupCompleted    Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  storefront    Storefront?
+  merchPackages MerchPackage[]
+  drops         Drop[]
+  payouts       Payout[]
+}
+
+model Storefront {
+  id               String   @id @default(uuid())
+  artistId         String   @unique
+  artist           Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  themeColorStart  String   @default("#168aad")
+  themeColorEnd    String?
+  font             String   @default("Inter")
+  customFontUrl    String?
+  logoUrl          String?
+  additionalImages String?  // Serialized JSON array of strings
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model MerchPackage {
+  id            String   @id @default(uuid())
+  artistId      String
+  artist        Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  type          String   // 'Medium', 'Exclusive', 'Premium'
+  items         String   // Serialized JSON array of items included
+  designConfigs String   // Serialized JSON design configs per item
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  drops Drop[]
+}
+
+model Drop {
+  id            String         @id @default(uuid())
+  artistId      String
+  artist        Artist         @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  launchDate    DateTime
+  durationHours Int            @default(24) // 24-96 hours
+  status        String         @default("scheduled") // 'scheduled', 'active', 'ended'
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  orders        Order[]
+  packages      MerchPackage[]
+}
+
+model Payout {
+  id                String   @id @default(uuid())
+  artistId          String
+  artist            Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  amount            Float
+  bankAccountNumber String
+  createdAt         DateTime @default(now())
+}
+
+model Order {
+  id              String   @id @default(uuid())
+  dropId          String
+  drop            Drop     @relation(fields: [dropId], references: [id])
+  customerEmail   String
+  customerName    String
+  shippingAddress String   // Serialized JSON
+  items           String   // Serialized JSON ordered items with sizes/variants
+  totalAmount     Float
+  paymentStatus   String   @default("pending") // 'pending', 'paid', 'failed'
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

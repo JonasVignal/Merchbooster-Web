@@ -1,0 +1,201 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.navLogo {
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #a78bfa, #60a5fa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+}
+
+.navCta {
+  background: #fff;
+  color: #000;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: transform 0.2s;
+}
+
+.navCta:hover {
+  transform: translateY(-1px);
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 6rem 2rem 4rem;
+}
+
+.heroTitle {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  max-width: 800px;
+  margin-bottom: 1.25rem;
+}
+
+.heroHighlight {
+  background: linear-gradient(135deg, #a78bfa 30%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroSubtitle {
+  max-width: 520px;
+  font-size: 1.1rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.section {
+  padding: 3rem 4rem;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.sectionTitle {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+}
+
+.emptyState {
+  color: var(--muted);
+}
+
+.artistGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem;
+}
+
+.artistCard {
+  aspect-ratio: 1;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.artistCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.artistLogo {
+  max-width: 80%;
+  max-height: 60px;
+  object-fit: contain;
+}
+
+.artistName {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+}
+
+.dropGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.dropCard {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dropCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.dropCardBanner {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.dropCardLogo {
+  max-width: 70%;
+  max-height: 60px;
+  object-fit: contain;
+}
+
+.dropCardArtistName {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.dropCardInfo {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dropCardPackages {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.countdown {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.footer {
+  margin-top: auto;
+  text-align: center;
+  padding: 3rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .nav {
+    padding: 1rem 1.5rem;
+  }
+
+  .section {
+    padding: 2.5rem 1.5rem;
+  }
+}

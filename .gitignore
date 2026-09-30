@@ -33,9 +33,23 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# local sqlite artifact (app uses Postgres) and user-uploaded files
+/dev.db
+/prisma/dev.db
+/public/uploads
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+
+# backstage-drop (sibling Next.js app)
+/backstage-drop/node_modules
+/backstage-drop/.next/
+/backstage-drop/out/
+/backstage-drop/src/generated/prisma
+/backstage-drop/next-env.d.ts
