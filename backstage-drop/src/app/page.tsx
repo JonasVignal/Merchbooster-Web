@@ -1,8 +1,8 @@
 import { prisma } from "../lib/prisma";
 import { CountdownBadge } from "./CountdownBadge";
+import { Carousel } from "./Carousel";
+import { MERCHBOOSTER_URL } from "../lib/site";
 import styles from "./page.module.css";
-
-const MERCHBOOSTER_URL = process.env.NEXT_PUBLIC_MERCHBOOSTER_URL || "http://localhost:3000";
 
 const FEATURED_COUNT = 6;
 const CLOSING_SOON_COUNT = 6;
@@ -60,32 +60,22 @@ export default async function Home() {
     .slice(0, CLOSING_SOON_COUNT);
 
   return (
-    <div className={styles.page}>
-      <nav className={styles.nav}>
-        <span className={styles.navLogo}>Backstage Drop</span>
-        <a href={MERCHBOOSTER_URL} className={styles.navCta}>
-          Become an artist →
-        </a>
-      </nav>
-
+    <>
       <section className={styles.hero}>
         <h1 className={styles.heroTitle}>
           Discover drops from your <span className={styles.heroHighlight}>favorite artists</span>
         </h1>
-        <p className={styles.heroSubtitle}>
-          Every artist storefront and limited-time merch drop created on Merchbooster, in one place.
-        </p>
       </section>
 
-      <section className={styles.section}>
+      <section className={styles.section} id="featured">
         <h2 className={styles.sectionTitle}>Featured Artists</h2>
         {featuredArtists.length > 0 ? (
-          <div className={styles.artistGrid}>
+          <Carousel>
             {featuredArtists.map(({ artist }) => (
               <a
                 key={artist.id}
                 href={`${MERCHBOOSTER_URL}/${artist.slug}`}
-                className={styles.artistCard}
+                className={`${styles.artistCard} ${styles.carouselItem}`}
                 style={{ background: artistBackground(artist.storefront!.themeColorStart, artist.storefront!.themeColorEnd) }}
               >
                 {artist.storefront?.logoUrl ? (
@@ -96,21 +86,21 @@ export default async function Home() {
                 )}
               </a>
             ))}
-          </div>
+          </Carousel>
         ) : (
           <p className={styles.emptyState}>No artists have set up their storefront yet.</p>
         )}
       </section>
 
-      <section className={styles.section}>
+      <section className={styles.section} id="closing-soon">
         <h2 className={styles.sectionTitle}>Drops Closing Soon</h2>
         {closingSoon.length > 0 ? (
-          <div className={styles.dropGrid}>
+          <Carousel>
             {closingSoon.map(({ drop, end }) => (
               <a
                 key={drop.id}
                 href={`${MERCHBOOSTER_URL}/${drop.artist.slug}`}
-                className={styles.dropCard}
+                className={`${styles.dropCard} ${styles.carouselItem}`}
               >
                 <div
                   className={styles.dropCardBanner}
@@ -140,15 +130,12 @@ export default async function Home() {
                 </div>
               </a>
             ))}
-          </div>
+          </Carousel>
         ) : (
           <p className={styles.emptyState}>No drops are live right now — check back soon.</p>
         )}
       </section>
 
-      <footer className={styles.footer}>
-        <p>Backstage Drop is powered by Merchbooster.</p>
-      </footer>
-    </div>
+    </>
   );
 }

@@ -41,6 +41,9 @@ model Storefront {
   customFontUrl    String?
   logoUrl          String?
   additionalImages String?  // Serialized JSON array of strings
+  story            String?  // Artist's own story, max 2300 characters
+  storyBoxColor    String?
+  storyTextColor   String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }

@@ -5,6 +5,7 @@ import styles from "./page.module.css";
 import { GOOGLE_FONTS, googleFontHref } from "../../../lib/fonts";
 
 const MAX_ADDITIONAL_IMAGES = 5;
+const MAX_STORY_LENGTH = 2300;
 
 export default function StorefrontSettings() {
   const [themeColorStart, setThemeColorStart] = useState("#168aad");
@@ -14,6 +15,9 @@ export default function StorefrontSettings() {
   const [customFontName, setCustomFontName] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
+  const [story, setStory] = useState("");
+  const [storyBoxColor, setStoryBoxColor] = useState("#0d0d0d");
+  const [storyTextColor, setStoryTextColor] = useState("#ffffff");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingFont, setIsUploadingFont] = useState(false);
@@ -31,6 +35,9 @@ export default function StorefrontSettings() {
           setCustomFontUrl(data.storefront.customFontUrl || "");
           setLogoUrl(data.storefront.logoUrl || "");
           setAdditionalImages(data.storefront.additionalImages || []);
+          setStory(data.storefront.story || "");
+          setStoryBoxColor(data.storefront.storyBoxColor || "#0d0d0d");
+          setStoryTextColor(data.storefront.storyTextColor || "#ffffff");
         }
         setIsLoading(false);
       });
@@ -121,7 +128,7 @@ export default function StorefrontSettings() {
       const res = await fetch("/api/storefront", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ themeColorStart, themeColorEnd, font, customFontUrl, logoUrl, additionalImages }),
+        body: JSON.stringify({ themeColorStart, themeColorEnd, font, customFontUrl, logoUrl, additionalImages, story, storyBoxColor, storyTextColor }),
       });
 
       if (res.ok) {
@@ -309,6 +316,53 @@ export default function StorefrontSettings() {
               </label>
             </div>
           )}
+        </div>
+
+        <div className={styles.section}>
+          <h2>5. Your Story</h2>
+          <p className={styles.hint}>
+            Tell your fans about yourself. This shows up on your storefront above the picture carousel.
+          </p>
+          <textarea
+            value={story}
+            onChange={(e) => setStory(e.target.value.slice(0, MAX_STORY_LENGTH))}
+            maxLength={MAX_STORY_LENGTH}
+            rows={8}
+            placeholder="Share your story..."
+            className={styles.textarea}
+          />
+          <p className={styles.charCount}>
+            {story.length}/{MAX_STORY_LENGTH}
+          </p>
+
+          <p className={styles.hint}>Choose the box color and text color for your story.</p>
+          <div className={styles.colorRow}>
+            <div className={styles.colorPicker}>
+              <input
+                type="color"
+                value={storyBoxColor}
+                onChange={(e) => setStoryBoxColor(e.target.value)}
+                className={styles.colorInput}
+                aria-label="Story box color"
+              />
+              <span className={styles.colorLabel}>Box Color</span>
+            </div>
+            <div className={styles.colorPicker}>
+              <input
+                type="color"
+                value={storyTextColor}
+                onChange={(e) => setStoryTextColor(e.target.value)}
+                className={styles.colorInput}
+                aria-label="Story text color"
+              />
+              <span className={styles.colorLabel}>Text Color</span>
+            </div>
+          </div>
+
+          <div className={styles.storyPreview} style={{ background: storyBoxColor, color: storyTextColor }}>
+            <h3 className={styles.storyPreviewHeading}>My Story</h3>
+            <p>{story || "Your story preview will show up here."}</p>
+          </div>
         </div>
 
         {message && <p className={styles.message}>{message}</p>}

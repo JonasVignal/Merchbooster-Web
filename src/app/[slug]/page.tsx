@@ -84,8 +84,6 @@ export default async function StorefrontPage({
         )}
       </header>
 
-      {additionalImages.length > 0 && <ImageCarousel images={additionalImages} />}
-
       <main className={styles.main}>
         {isDropActive ? (
           <div className={styles.dropActive}>
@@ -130,7 +128,28 @@ export default async function StorefrontPage({
           </div>
         )}
       </main>
-      
+
+      {artist.storefront.story && (
+        <section
+          className={styles.story}
+          style={{
+            background: artist.storefront.storyBoxColor || undefined,
+          }}
+        >
+          <h2
+            className={styles.storyHeading}
+            style={{ color: artist.storefront.storyTextColor || undefined }}
+          >
+            My Story
+          </h2>
+          <p style={{ color: artist.storefront.storyTextColor || undefined }}>
+            {artist.storefront.story}
+          </p>
+        </section>
+      )}
+
+      {additionalImages.length > 0 && <ImageCarousel images={additionalImages} />}
+
       <footer className={styles.footer}>
         <p>Powered by Merchbooster</p>
       </footer>

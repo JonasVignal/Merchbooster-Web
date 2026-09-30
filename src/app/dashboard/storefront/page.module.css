@@ -129,6 +129,47 @@
   border-color: #3b82f6;
 }
 
+.textarea {
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  font-family: inherit;
+  width: 100%;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.charCount {
+  align-self: flex-end;
+  color: #a1a1aa;
+  font-size: 0.8rem;
+}
+
+.storyPreview {
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  line-height: 1.6;
+}
+
+.storyPreview p {
+  white-space: pre-wrap;
+}
+
+.storyPreviewHeading {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
 .uploadArea {
   display: flex;
   align-items: center;
