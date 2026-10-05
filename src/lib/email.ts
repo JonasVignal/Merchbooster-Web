@@ -1,5 +1,38 @@
 import { resend, EMAIL_FROM } from "./resend";
 
+// Hardcoded until a real admin notification setting exists.
+const ADMIN_NOTIFICATION_EMAIL = "jonasvignal@gmail.com";
+
+export async function sendOrderConfirmationEmail(
+  order: {
+    id: string;
+    customerName: string;
+    customerEmail: string;
+    totalAmount: number;
+    items: { name: string; price: number; quantity: number }[];
+  },
+  artistName: string | null
+) {
+  try {
+    await resend.emails.send({
+      from: EMAIL_FROM,
+      to: [order.customerEmail, ADMIN_NOTIFICATION_EMAIL],
+      subject: `Order confirmed — ${artistName ?? "Merchbooster"} #${order.id.slice(0, 8)}`,
+      html: `
+        <p>Hi ${order.customerName},</p>
+        <p>Your order from ${artistName ?? "the artist"} has been received and is now pending.</p>
+        <ul>
+          ${order.items.map((item) => `<li>${item.name} × ${item.quantity} — ${item.price * item.quantity} DKK</li>`).join("")}
+        </ul>
+        <p><strong>Total: ${order.totalAmount.toFixed(2)} DKK</strong></p>
+        <p>Order reference: ${order.id}</p>
+      `,
+    });
+  } catch (error) {
+    console.error("Failed to send order confirmation email:", error);
+  }
+}
+
 export async function sendWelcomeEmail(to: string, name: string | null) {
   try {
     await resend.emails.send({

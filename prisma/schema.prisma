@@ -17,6 +17,7 @@ model Artist {
   email             String   @unique
   passwordHash      String?
   name              String?
+  fullName          String?
   slug              String?  @unique
   address           String?
   phoneNumber       String?
@@ -40,10 +41,16 @@ model Storefront {
   font             String   @default("Inter")
   customFontUrl    String?
   logoUrl          String?
+  frontpagePictureUrl String? // Shown in the Backstage Drop featured/closing-soon carousels
   additionalImages String?  // Serialized JSON array of strings
   story            String?  // Artist's own story, max 2300 characters
   storyBoxColor    String?
   storyTextColor   String?
+  youtubeUrl       String?
+  instagramUrl     String?
+  facebookUrl      String?
+  spotifyUrl       String?
+  tiktokUrl        String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
@@ -89,6 +96,7 @@ model Order {
   drop            Drop     @relation(fields: [dropId], references: [id])
   customerEmail   String
   customerName    String
+  customerPhone   String
   shippingAddress String   // Serialized JSON
   items           String   // Serialized JSON ordered items with sizes/variants
   totalAmount     Float

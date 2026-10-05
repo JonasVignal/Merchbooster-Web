@@ -14,13 +14,20 @@ export default function StorefrontSettings() {
   const [customFontUrl, setCustomFontUrl] = useState("");
   const [customFontName, setCustomFontName] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+  const [frontpagePictureUrl, setFrontpagePictureUrl] = useState("");
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [story, setStory] = useState("");
   const [storyBoxColor, setStoryBoxColor] = useState("#0d0d0d");
   const [storyTextColor, setStoryTextColor] = useState("#ffffff");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [facebookUrl, setFacebookUrl] = useState("");
+  const [spotifyUrl, setSpotifyUrl] = useState("");
+  const [tiktokUrl, setTiktokUrl] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingFont, setIsUploadingFont] = useState(false);
+  const [isUploadingFrontpagePicture, setIsUploadingFrontpagePicture] = useState(false);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -34,10 +41,16 @@ export default function StorefrontSettings() {
           setFont(data.storefront.font || "Inter");
           setCustomFontUrl(data.storefront.customFontUrl || "");
           setLogoUrl(data.storefront.logoUrl || "");
+          setFrontpagePictureUrl(data.storefront.frontpagePictureUrl || "");
           setAdditionalImages(data.storefront.additionalImages || []);
           setStory(data.storefront.story || "");
           setStoryBoxColor(data.storefront.storyBoxColor || "#0d0d0d");
           setStoryTextColor(data.storefront.storyTextColor || "#ffffff");
+          setYoutubeUrl(data.storefront.youtubeUrl || "");
+          setInstagramUrl(data.storefront.instagramUrl || "");
+          setFacebookUrl(data.storefront.facebookUrl || "");
+          setSpotifyUrl(data.storefront.spotifyUrl || "");
+          setTiktokUrl(data.storefront.tiktokUrl || "");
         }
         setIsLoading(false);
       });
@@ -61,6 +74,30 @@ export default function StorefrontSettings() {
       }
     } catch (err) {
       console.error("Upload failed", err);
+    }
+  };
+
+  const handleFrontpagePictureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingFrontpagePicture(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFrontpagePictureUrl(data.url);
+      }
+    } catch (err) {
+      console.error("Frontpage picture upload failed", err);
+    } finally {
+      setIsUploadingFrontpagePicture(false);
     }
   };
 
@@ -128,7 +165,23 @@ export default function StorefrontSettings() {
       const res = await fetch("/api/storefront", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ themeColorStart, themeColorEnd, font, customFontUrl, logoUrl, additionalImages, story, storyBoxColor, storyTextColor }),
+        body: JSON.stringify({
+          themeColorStart,
+          themeColorEnd,
+          font,
+          customFontUrl,
+          logoUrl,
+          frontpagePictureUrl,
+          additionalImages,
+          story,
+          storyBoxColor,
+          storyTextColor,
+          youtubeUrl,
+          instagramUrl,
+          facebookUrl,
+          spotifyUrl,
+          tiktokUrl,
+        }),
       });
 
       if (res.ok) {
@@ -166,6 +219,16 @@ export default function StorefrontSettings() {
                 aria-label="Primary color"
               />
               <span className={styles.colorLabel}>Color 1</span>
+              <input
+                type="text"
+                value={themeColorStart}
+                onChange={(e) => setThemeColorStart(e.target.value)}
+                className={styles.hexInput}
+                maxLength={7}
+                spellCheck={false}
+                placeholder="#168aad"
+                aria-label="Primary color hex code"
+              />
             </div>
 
             {themeColorEnd !== null ? (
@@ -178,6 +241,16 @@ export default function StorefrontSettings() {
                   aria-label="Secondary color"
                 />
                 <span className={styles.colorLabel}>Color 2</span>
+                <input
+                  type="text"
+                  value={themeColorEnd}
+                  onChange={(e) => setThemeColorEnd(e.target.value)}
+                  className={styles.hexInput}
+                  maxLength={7}
+                  spellCheck={false}
+                  placeholder="#76c893"
+                  aria-label="Secondary color hex code"
+                />
                 <button type="button" className={styles.removeColorBtn} onClick={() => setThemeColorEnd(null)}>
                   Remove
                 </button>
@@ -193,7 +266,7 @@ export default function StorefrontSettings() {
             className={styles.themePreview}
             style={{
               background: themeColorEnd
-                ? `linear-gradient(135deg, ${themeColorStart}, ${themeColorEnd})`
+                ? `linear-gradient(180deg, ${themeColorStart}, ${themeColorEnd})`
                 : themeColorStart,
             }}
           />
@@ -279,7 +352,39 @@ export default function StorefrontSettings() {
         </div>
 
         <div className={styles.section}>
-          <h2>4. Storefront Images</h2>
+          <h2>4. Frontpage Picture</h2>
+          <p className={styles.hint}>
+            Frontpage picture, for shown on Backstage Drop. Shown in the featured artists and drops closing soon carousels there.
+          </p>
+          <div className={styles.uploadArea}>
+            {frontpagePictureUrl ? (
+              <div className={styles.logoPreview}>
+                <img src={frontpagePictureUrl} alt="Frontpage picture" />
+                <button
+                  type="button"
+                  onClick={() => setFrontpagePictureUrl("")}
+                  className={styles.removeBtn}
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <label className={styles.uploadLabel}>
+                <span>{isUploadingFrontpagePicture ? "Uploading..." : "Click to upload a picture"}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFrontpagePictureUpload}
+                  hidden
+                  disabled={isUploadingFrontpagePicture}
+                />
+              </label>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <h2>5. Storefront Images</h2>
           <p className={styles.hint}>
             Upload up to {MAX_ADDITIONAL_IMAGES} images to show as a carousel on your storefront ({additionalImages.length}/{MAX_ADDITIONAL_IMAGES}).
           </p>
@@ -319,7 +424,7 @@ export default function StorefrontSettings() {
         </div>
 
         <div className={styles.section}>
-          <h2>5. Your Story</h2>
+          <h2>6. Your Story</h2>
           <p className={styles.hint}>
             Tell your fans about yourself. This shows up on your storefront above the picture carousel.
           </p>
@@ -362,6 +467,65 @@ export default function StorefrontSettings() {
           <div className={styles.storyPreview} style={{ background: storyBoxColor, color: storyTextColor }}>
             <h3 className={styles.storyPreviewHeading}>My Story</h3>
             <p>{story || "Your story preview will show up here."}</p>
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <h2>7. Social Media</h2>
+          <p className={styles.hint}>
+            Add your profile links. Filled-in ones show as icons at the bottom of your storefront, after the picture carousel.
+          </p>
+          <div className={styles.socialInputs}>
+            <label className={styles.socialInputRow}>
+              <span>YouTube</span>
+              <input
+                type="url"
+                placeholder="https://youtube.com/@yourchannel"
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+                className={styles.socialInput}
+              />
+            </label>
+            <label className={styles.socialInputRow}>
+              <span>Instagram</span>
+              <input
+                type="url"
+                placeholder="https://instagram.com/yourhandle"
+                value={instagramUrl}
+                onChange={(e) => setInstagramUrl(e.target.value)}
+                className={styles.socialInput}
+              />
+            </label>
+            <label className={styles.socialInputRow}>
+              <span>Facebook</span>
+              <input
+                type="url"
+                placeholder="https://facebook.com/yourpage"
+                value={facebookUrl}
+                onChange={(e) => setFacebookUrl(e.target.value)}
+                className={styles.socialInput}
+              />
+            </label>
+            <label className={styles.socialInputRow}>
+              <span>Spotify</span>
+              <input
+                type="url"
+                placeholder="https://open.spotify.com/artist/..."
+                value={spotifyUrl}
+                onChange={(e) => setSpotifyUrl(e.target.value)}
+                className={styles.socialInput}
+              />
+            </label>
+            <label className={styles.socialInputRow}>
+              <span>TikTok</span>
+              <input
+                type="url"
+                placeholder="https://tiktok.com/@yourhandle"
+                value={tiktokUrl}
+                onChange={(e) => setTiktokUrl(e.target.value)}
+                className={styles.socialInput}
+              />
+            </label>
           </div>
         </div>
 

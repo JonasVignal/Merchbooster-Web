@@ -39,6 +39,7 @@ model Storefront {
   font             String   @default("Inter")
   customFontUrl    String?
   logoUrl          String?
+  frontpagePictureUrl String?
   additionalImages String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt

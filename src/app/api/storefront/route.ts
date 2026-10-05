@@ -13,6 +13,15 @@ function withParsedImages<T extends { additionalImages: string | null }>(storefr
   };
 }
 
+function isValidUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
@@ -43,7 +52,23 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Artist not found" }, { status: 404 });
   }
 
-  const { themeColorStart, themeColorEnd, font, customFontUrl, logoUrl, additionalImages, story, storyBoxColor, storyTextColor } = await req.json();
+  const {
+    themeColorStart,
+    themeColorEnd,
+    font,
+    customFontUrl,
+    logoUrl,
+    frontpagePictureUrl,
+    additionalImages,
+    story,
+    storyBoxColor,
+    storyTextColor,
+    youtubeUrl,
+    instagramUrl,
+    facebookUrl,
+    spotifyUrl,
+    tiktokUrl,
+  } = await req.json();
 
   const hexColor = /^#[0-9a-fA-F]{6}$/;
   if (!hexColor.test(themeColorStart)) {
@@ -67,12 +92,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: `Your story can be at most ${MAX_STORY_LENGTH} characters` }, { status: 400 });
   }
 
+  const socialLinks = { youtubeUrl, instagramUrl, facebookUrl, spotifyUrl, tiktokUrl };
+  for (const [key, value] of Object.entries(socialLinks)) {
+    if (value && !isValidUrl(value)) {
+      return NextResponse.json({ error: `Invalid ${key.replace("Url", "")} link` }, { status: 400 });
+    }
+  }
+
   const additionalImagesJson = additionalImages?.length ? JSON.stringify(additionalImages) : null;
+
+  const socialLinkData = {
+    youtubeUrl: youtubeUrl || null,
+    instagramUrl: instagramUrl || null,
+    facebookUrl: facebookUrl || null,
+    spotifyUrl: spotifyUrl || null,
+    tiktokUrl: tiktokUrl || null,
+  };
 
   const storefront = await prisma.storefront.upsert({
     where: { artistId: artist.id },
-    update: { themeColorStart, themeColorEnd: themeColorEnd || null, font, customFontUrl: customFontUrl || null, logoUrl, additionalImages: additionalImagesJson, story: story || null, storyBoxColor: storyBoxColor || null, storyTextColor: storyTextColor || null },
-    create: { artistId: artist.id, themeColorStart, themeColorEnd: themeColorEnd || null, font, customFontUrl: customFontUrl || null, logoUrl, additionalImages: additionalImagesJson, story: story || null, storyBoxColor: storyBoxColor || null, storyTextColor: storyTextColor || null },
+    update: { themeColorStart, themeColorEnd: themeColorEnd || null, font, customFontUrl: customFontUrl || null, logoUrl, frontpagePictureUrl: frontpagePictureUrl || null, additionalImages: additionalImagesJson, story: story || null, storyBoxColor: storyBoxColor || null, storyTextColor: storyTextColor || null, ...socialLinkData },
+    create: { artistId: artist.id, themeColorStart, themeColorEnd: themeColorEnd || null, font, customFontUrl: customFontUrl || null, logoUrl, frontpagePictureUrl: frontpagePictureUrl || null, additionalImages: additionalImagesJson, story: story || null, storyBoxColor: storyBoxColor || null, storyTextColor: storyTextColor || null, ...socialLinkData },
   });
 
   // Mark setup as completed if it wasn't

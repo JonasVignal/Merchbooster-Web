@@ -2,15 +2,12 @@ import { notFound } from "next/navigation";
 import { prisma } from "../../lib/prisma";
 import { CountdownTimer } from "./CountdownTimer";
 import { ImageCarousel } from "./ImageCarousel";
-import { googleFontHref } from "../../lib/fonts";
+import { ProductsSection } from "./ProductsSection";
+import { BasketBadge } from "./BasketBadge";
+import { SocialLinks } from "./SocialLinks";
+import { getStorefrontTheme } from "../../lib/theme";
+import { STOREFRONT_FOOTER_COLUMNS } from "../../lib/storefront-footer";
 import styles from "./page.module.css";
-
-function brightness(hex: string) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return (r * 299 + g * 587 + b * 114) / 1000;
-}
 
 export default async function StorefrontPage({
   params,
@@ -49,19 +46,9 @@ export default async function StorefrontPage({
     }
   }
 
-  const { themeColorStart, themeColorEnd } = artist.storefront;
-  const background = themeColorEnd
-    ? `linear-gradient(135deg, ${themeColorStart}, ${themeColorEnd})`
-    : themeColorStart;
-
-  const avgBrightness = themeColorEnd
-    ? (brightness(themeColorStart) + brightness(themeColorEnd)) / 2
-    : brightness(themeColorStart);
-  const needsDarkText = avgBrightness > 150;
-
-  const { customFontUrl } = artist.storefront;
-  const fontFamily = customFontUrl ? "StorefrontCustomFont" : artist.storefront.font;
-  const fontHref = customFontUrl ? null : googleFontHref(artist.storefront.font);
+  const { background, needsDarkText, fontFamily, fontHref, customFontUrl } = getStorefrontTheme(
+    artist.storefront
+  );
 
   const additionalImages: string[] = artist.storefront.additionalImages
     ? JSON.parse(artist.storefront.additionalImages)
@@ -82,6 +69,7 @@ export default async function StorefrontPage({
         ) : (
           <h1 className={styles.artistName}>{artist.name}</h1>
         )}
+        <BasketBadge slug={slug} />
       </header>
 
       <main className={styles.main}>
@@ -92,26 +80,7 @@ export default async function StorefrontPage({
               <p>Time left until this drop ends</p>
             </div>
             
-            <div className={styles.productsGrid}>
-              {/* Dummy Products for prototype */}
-              <div className={styles.productCard}>
-                <div className={styles.productImagePlaceholder}>Exclusive Hoodie</div>
-                <div className={styles.productInfo}>
-                  <h3>Exclusive Hoodie</h3>
-                  <p>650 DKK</p>
-                  <button className={styles.buyBtn}>Drop in Basket</button>
-                </div>
-              </div>
-              
-              <div className={styles.productCard}>
-                <div className={styles.productImagePlaceholder}>T-Shirt</div>
-                <div className={styles.productInfo}>
-                  <h3>Classic T-Shirt</h3>
-                  <p>300 DKK</p>
-                  <button className={styles.buyBtn}>Drop in Basket</button>
-                </div>
-              </div>
-            </div>
+            <ProductsSection slug={slug} />
           </div>
         ) : (
           <div className={styles.dropInactive}>
@@ -150,8 +119,30 @@ export default async function StorefrontPage({
 
       {additionalImages.length > 0 && <ImageCarousel images={additionalImages} />}
 
+      <SocialLinks
+        youtubeUrl={artist.storefront.youtubeUrl}
+        instagramUrl={artist.storefront.instagramUrl}
+        facebookUrl={artist.storefront.facebookUrl}
+        spotifyUrl={artist.storefront.spotifyUrl}
+        tiktokUrl={artist.storefront.tiktokUrl}
+      />
+
       <footer className={styles.footer}>
-        <p>Powered by Merchbooster</p>
+        <div className={styles.footerColumns}>
+          {STOREFRONT_FOOTER_COLUMNS.map((column) => (
+            <div key={column.title} className={styles.footerColumn}>
+              <h3 className={styles.footerColumnTitle}>{column.title}</h3>
+              <ul className={styles.footerLinkList}>
+                {column.links.map((link) => (
+                  <li key={link.label}>
+                    <a href={link.href}>{link.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <p className={styles.footerBottom}>Powered by Merchbooster</p>
       </footer>
     </div>
   );

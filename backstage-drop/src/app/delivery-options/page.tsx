@@ -8,7 +8,7 @@ export default function DeliveryOptionsPage() {
     <div className={styles.content}>
       <h1 className={styles.title}>Delivery Options</h1>
       <p>
-        Delivery is handled by each individual artist, so available shipping options depend on the drop you're
+        Delivery is handled by caring hands, so available shipping options depend on the drop you're
         buying from.
       </p>
       <h2>Standard shipping</h2>

@@ -5,6 +5,7 @@ import styles from "./page.module.css";
 
 export default function PersonalInfo() {
   const [name, setName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -27,6 +28,7 @@ export default function PersonalInfo() {
         }
         if (data.artist) {
           setName(data.artist.name || "");
+          setFullName(data.artist.fullName || "");
           setEmail(data.artist.email || "");
           setAddress(data.artist.address || "");
           setPhoneNumber(data.artist.phoneNumber || "");
@@ -46,7 +48,7 @@ export default function PersonalInfo() {
       const res = await fetch("/api/artist", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, address, phoneNumber, bankAccountNumber }),
+        body: JSON.stringify({ name, fullName, email, address, phoneNumber, bankAccountNumber }),
       });
 
       if (res.ok) {
@@ -74,13 +76,24 @@ export default function PersonalInfo() {
       <div className={styles.card}>
         <form onSubmit={handleSave} className={styles.form}>
           <div className={styles.inputGroup}>
-            <label htmlFor="name">Name</label>
+            <label htmlFor="name">Artist Name</label>
             <input
               type="text"
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="fullName">Full Name</label>
+            <input
+              type="text"
+              id="fullName"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Your legal full name"
             />
           </div>
 

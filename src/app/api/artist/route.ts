@@ -13,6 +13,7 @@ export async function GET() {
     where: { id: session.user.id },
     select: {
       name: true,
+      fullName: true,
       email: true,
       address: true,
       phoneNumber: true,
@@ -33,7 +34,7 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { name, email, address, phoneNumber, bankAccountNumber } = await req.json();
+  const { name, fullName, email, address, phoneNumber, bankAccountNumber } = await req.json();
 
   if (!email) {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
@@ -42,9 +43,10 @@ export async function PATCH(req: Request) {
   try {
     const artist = await prisma.artist.update({
       where: { id: session.user.id },
-      data: { name, email, address, phoneNumber, bankAccountNumber },
+      data: { name, fullName, email, address, phoneNumber, bankAccountNumber },
       select: {
         name: true,
+        fullName: true,
         email: true,
         address: true,
         phoneNumber: true,

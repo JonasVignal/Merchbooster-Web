@@ -1,5 +1,14 @@
 export const MERCHBOOSTER_URL = process.env.NEXT_PUBLIC_MERCHBOOSTER_URL || "http://localhost:3000";
 
+// Uploaded images (logos, frontpage pictures) are stored as paths relative to
+// Merchbooster's own server, e.g. "/uploads/xyz.png" — that's a different origin
+// from Backstage Drop, so they need the Merchbooster origin prefixed to actually load.
+export function resolveAssetUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (/^https?:\/\//.test(url)) return url;
+  return `${MERCHBOOSTER_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+}
+
 export type FooterLink = { label: string; href: string };
 export type FooterColumn = { title: string; links: FooterLink[] };
 

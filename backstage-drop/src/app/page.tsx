@@ -1,7 +1,7 @@
 import { prisma } from "../lib/prisma";
 import { CountdownBadge } from "./CountdownBadge";
 import { Carousel } from "./Carousel";
-import { MERCHBOOSTER_URL } from "../lib/site";
+import { MERCHBOOSTER_URL, resolveAssetUrl } from "../lib/site";
 import styles from "./page.module.css";
 
 const FEATURED_COUNT = 6;
@@ -78,9 +78,20 @@ export default async function Home() {
                 className={`${styles.artistCard} ${styles.carouselItem}`}
                 style={{ background: artistBackground(artist.storefront!.themeColorStart, artist.storefront!.themeColorEnd) }}
               >
-                {artist.storefront?.logoUrl ? (
+                {artist.storefront?.frontpagePictureUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={artist.storefront.logoUrl} alt={`${artist.name} logo`} className={styles.artistLogo} />
+                  <img
+                    src={resolveAssetUrl(artist.storefront.frontpagePictureUrl)!}
+                    alt={artist.name ?? "Artist"}
+                    className={styles.artistCardImage}
+                  />
+                ) : artist.storefront?.logoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={resolveAssetUrl(artist.storefront.logoUrl)!}
+                    alt={`${artist.name} logo`}
+                    className={styles.artistLogo}
+                  />
                 ) : (
                   <span className={styles.artistName}>{artist.name}</span>
                 )}
@@ -111,10 +122,17 @@ export default async function Home() {
                     ),
                   }}
                 >
-                  {drop.artist.storefront?.logoUrl ? (
+                  {drop.artist.storefront?.frontpagePictureUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={drop.artist.storefront.logoUrl}
+                      src={resolveAssetUrl(drop.artist.storefront.frontpagePictureUrl)!}
+                      alt={drop.artist.name ?? "Artist"}
+                      className={styles.dropCardImage}
+                    />
+                  ) : drop.artist.storefront?.logoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={resolveAssetUrl(drop.artist.storefront.logoUrl)!}
                       alt={`${drop.artist.name} logo`}
                       className={styles.dropCardLogo}
                     />
